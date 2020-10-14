@@ -28,25 +28,13 @@ client.connect(err => {
   const reviewCollection = client.db(`${process.env.DB_NAME}`).collection("reviews");
   console.log("server connected")
 
-  app.post('/addServices', (req, res) => {
-    const service = req.body;
-    console.log(service)
-    serviceCollection.insertOne(service)
-    .then(result => {
-      console.log(result);
-      res.send(result)
-    console.log(service)
-  })
-})
-
 app.post('/addReviews', (req, res) => {
   const reviews = req.body;
-  console.log(reviews)
   reviewCollection.insertOne(reviews)
   .then(result => {
     console.log(result);
     res.send(result)
-  console.log(reviews)
+  
 })
 })
 
@@ -57,26 +45,48 @@ app.get('/reviews', (req, res) => {
   })
 });
 
-// app.post('/addServices', (req, res) => {
+
+
+app.post('/addServices', (req, res) => {
   
-//   const file = req.files.file;
-//   const name = req.body.name;
-//   const email = req.body.email;
-//   const newImg = file.data;
-//   const encImg = newImg.toString('base64');
-//   console.log(file)
+  const file = req.files.file;
+  const name = req.body.name;
+  const description=req.body.description;
+  console.log(name,description,file);
+  file.mv(`${__dirname}/services/${file.name}`, err =>{
+    
+    if(err){
+      console.log(err);
+      return res.status(500).send({msg: 'Failed to upload Image'});
+    }
+     res.send({name: file.name, path: `/${file.name}` });
+          
 
-//   var image = {
-//       contentType: file.mimetype,
-//       size: file.size,
-//       img: Buffer.from(encImg, 'base64')
-//   };
+  })
+  // const newImg = file.data;
+  // const encImg = newImg.toString('base64');
+  // console.log(file)
 
-//   serviceCollection.insertOne({ name, email, image })
-//       .then(result => {
-//           res.send(result.insertedCount > 0);
-//       })
-// })
+  // var image = {
+  //     contentType: file.mimetype,
+  //     size: file.size,
+  //     img: Buffer.from(encImg, 'base64')
+  // };
+
+  // serviceCollection.insertOne({ name, email, description, image })
+  //     .then(result => {
+  //         res.send(result.insertedCount > 0);
+  //     })
+})
+
+app.get('/services', (req, res) => {
+  serviceCollection.find({})
+  .toArray((err, document)=>{
+    res.send(document)
+    console.log(document)
+  })
+});
+
 });
 
 
