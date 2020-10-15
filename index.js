@@ -27,6 +27,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const serviceCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const reviewCollection = client.db(`${process.env.DB_NAME}`).collection("reviews");
+  const orderCollection = client.db(`${process.env.DB_NAME}`).collection("orders");
+  const adminCollection = client.db(`${process.env.DB_NAME}`).collection("createAdmin");
+  
   console.log("server connected")
 
 app.post('/addReviews', (req, res) => {
@@ -69,9 +72,6 @@ app.post('/addServices', (req, res) => {
       size: file.size,
       img: Buffer.from(encImg, 'base64')
   };
-
-
-
     serviceCollection.insertOne({name, description, image})
     .then(result=>{
       fs.remove(filePath, error => {
@@ -84,33 +84,64 @@ app.post('/addServices', (req, res) => {
       })
       
     })
-    //  res.send({name: file.name, path: `/${file.name}` });
           
-
   })
-  // const newImg = file.data;
-  // const encImg = newImg.toString('base64');
-  // console.log(file)
-
-  // var image = {
-  //     contentType: file.mimetype,
-  //     size: file.size,
-  //     img: Buffer.from(encImg, 'base64')
-  // };
-
-  // serviceCollection.insertOne({ name, email, description, image })
-  //     .then(result => {
-  //         res.send(result.insertedCount > 0);
-  //     })
+  
 })
 
 app.get('/services', (req, res) => {
   serviceCollection.find({})
   .toArray((err, document)=>{
     res.send(document)
-    console.log(document)
   })
 });
+
+app.post('/orderInfo', (req, res) => {
+  const order = req.body;
+  orderCollection.insertOne(order)
+  .then(result => {
+    res.send(result)
+  
+})
+})
+
+app.get('/order/:email', (req, res) => {
+  const email = req.params.email;
+  console.log(email)
+  orderCollection.find({email : email})
+  .toArray((err, document)=>{
+    res.send(document)
+    console.log(document)
+    
+  })
+});
+
+app.get('/allOrder', (req, res) => {
+  const email = req.body.email;
+  orderCollection.find({})
+  .toArray((err, document)=>{
+    res.send(document)
+    console.log(document)
+    
+  })
+});
+
+app.post('/createAdmin', (req, res) => {
+  const admin = req.body;
+  adminCollection.insertOne(admin)
+  .then(result => {
+    res.send(result)
+  
+})
+})
+
+app.post('/isAdmin', (req, res) => {
+  const email = req.body.email;
+  adminCollection.find({ email: email })
+      .toArray((err, admin) => {
+          res.send(admin.length > 0);
+      })
+})
 
 });
 
