@@ -62,9 +62,9 @@ app.post('/addServices', (req, res) => {
   const file = req.files.file;
   const name = req.body.name;
   const description=req.body.description;
-  const status = req.body.upd;
-  const picture = req.body.pict;
-  console.log(picture)
+  // const status = req.body.upd;
+  // const picture = req.body.pict;
+  // console.log(picture)
   const filePath = `${__dirname}/services/${file.name}`;
   
   file.mv(filePath, err =>{
@@ -81,7 +81,7 @@ app.post('/addServices', (req, res) => {
       size: file.size,
       img: Buffer.from(encImg, 'base64')
   };
-    serviceCollection.insertOne({name, description, status, picture, image})
+    serviceCollection.insertOne({name, description, image})
     .then(result=>{
       fs.remove(filePath, error => {
        
