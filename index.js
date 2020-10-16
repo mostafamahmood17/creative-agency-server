@@ -49,7 +49,7 @@ app.post('/addReviews', (req, res) => {
 
 // review send to ui
 app.get('/reviews', (req, res) => {
-  reviewCollection.find({})
+  reviewCollection.find({}).limit(6)
   .toArray((err, document)=>{
     res.send(document)
   })
@@ -63,6 +63,8 @@ app.post('/addServices', (req, res) => {
   const name = req.body.name;
   const description=req.body.description;
   const status = req.body.upd;
+  const picture = req.body.pict;
+  console.log(picture)
   const filePath = `${__dirname}/services/${file.name}`;
   
   file.mv(filePath, err =>{
@@ -79,7 +81,7 @@ app.post('/addServices', (req, res) => {
       size: file.size,
       img: Buffer.from(encImg, 'base64')
   };
-    serviceCollection.insertOne({name, description, status, image})
+    serviceCollection.insertOne({name, description, status, picture, image})
     .then(result=>{
       fs.remove(filePath, error => {
        
@@ -171,6 +173,18 @@ app.post('/isAdmin', (req, res) => {
           res.send(admin.length > 0);
       })
 })
+// update status by admin
+// app.patch('/projectStatus', (req,res) => { 
+//   orderCollection.updateOne({_id : ObjectId(req.body.id)},
+//       {
+//           $set: { status: req.body.updateProject},
+//       }
+//   )
+//   .then(result =>{
+//       res.send(result.modifiedCount > 0)
+//       console.log(result)
+//   })
+// })
 
 });
 
@@ -184,45 +198,3 @@ app.get('/', (req, res) => {
 app.listen(process.env.PORT || port)
 
 
-
-// app.get('/allOrder', (req, res) => {
-//   const email = req.body.email;
-//   orderCollection.find({})
-//   .toArray((err, document)=>{
-//     res.send(document)
-//     console.log(document)
-    
-//   })
-// });
-
-
-// app.get('/allOrder/:email', (req, res) => {
-
-//   const email = req.params.email;
-//     let filter;
-//   adminCollection.find({email : email})
-//       .toArray((err, admin) => {
-          
-//           if (admin.length === 0) {
-//               filter={email : email};
-//           }
-            
-//       })
-//       if (filter) {
-//         console.log(filter)
-//         orderCollection.find()
-//         .toArray((err, documents) => {
-            
-//             res.send(documents);
-//         })
-
-//       } else {
-//         console.log("user" , filter)
-//         orderCollection.find({email})
-//         .toArray((err, documents) => {
-            
-//             res.send(documents);
-//         })
-        
-//       }
-// })
