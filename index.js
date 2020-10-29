@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs-extra')
 const fileUpload = require('express-fileupload');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 
 require('dotenv').config();
 
@@ -174,17 +175,18 @@ app.post('/isAdmin', (req, res) => {
       })
 })
 // update status by admin
-// app.patch('/projectStatus', (req,res) => { 
-//   orderCollection.updateOne({_id : ObjectId(req.body.id)},
-//       {
-//           $set: { status: req.body.updateProject},
-//       }
-//   )
-//   .then(result =>{
-//       res.send(result.modifiedCount > 0)
-//       console.log(result)
-//   })
-// })
+app.patch('/projectStatus', (req,res) => { 
+  orderCollection.updateOne({_id : ObjectId(req.body.id)},
+      {
+          $set: { status: req.body.updateProject},
+      }
+  )
+  .then(result =>{
+      console.log(result)
+      res.send(result)
+     
+  })
+})
 
 });
 
